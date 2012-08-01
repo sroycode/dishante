@@ -16,5 +16,4 @@ you need to have boost
 mysql /pgsql libraries are optional, if you want to compile without just unset the flags
 **SQL_INCLUDE and **SQL_LDFLAGS
 
-cd src
-make
+cd src && make
