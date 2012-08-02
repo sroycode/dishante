@@ -142,7 +142,7 @@ public:
 		if (nores>PointDataSize) nores=PointDataSize;
 		PointDataSfc.ksearch(Q, (unsigned long)nores, answer,distance,0);
 		for (std::size_t i=0; i<answer.size(); ++i) {
-			aout.push_back(boost::make_tuple(answer[0],ceil(sqrt(distance[0])), AttrDataVec[std::size_t(answer[0])]));
+			aout.push_back(boost::make_tuple(answer[i],ceil(sqrt(distance[i])), AttrDataVec[std::size_t(answer[i])]));
 		}
 		return aout;
 	}
