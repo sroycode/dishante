@@ -102,7 +102,7 @@ public:
 			ss << "{result:";
 			for (std::size_t i=0; i<res.size(); ++i) {
 				if (i>0) ss << ",";
-				ss << "[id:" << res[i].template get<0>() << ",dist:" << res[i].template get<1>() << ",{" ;
+				ss << "[dist:" << res[i].template get<1>() << ",{" ;
 				for (std::size_t j=0; j<res[i].template get<2>().size(); ++j) {
 					if (j>0) ss <<",";
 					ss << invec_[j] << ":\"" << res[i].template get<2>()[j] << "\"" ;
@@ -114,7 +114,23 @@ public:
 			result=ss.str();
 		}
 		break;
-		case 2:
+		case 2: {
+			std::stringstream ss;
+			ss << "dist";
+			for (std::size_t j=0; j<invec_.size(); ++j) {
+				ss << "," << invec_[j];
+			}
+			ss << std::endl;
+			for (std::size_t i=0; i<res.size(); ++i) {
+				ss << res[i].template get<1>();
+				for (std::size_t j=0; j<res[i].template get<2>().size(); ++j) {
+					ss << "," << res[i].template get<2>()[j];
+				}
+				ss << std::endl;
+			}
+			status=true;
+			result=ss.str();
+		}
 			break;
 		default:
 			break;
