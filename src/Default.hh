@@ -35,7 +35,7 @@
 #define DSHN_DEFAULT_STRN_DOT "."
 
 #ifndef DSHN_DEFAULT_COORDT
-#define DSHN_DEFAULT_COORDT unsigned int
+#define DSHN_DEFAULT_COORDT long int
 #endif
 
 #define DSHN_DEFAULT_STRN_HELP "help"
