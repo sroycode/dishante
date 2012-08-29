@@ -26,6 +26,6 @@ The type of x,y can be changed in Defaults.hh to double though STANN is faster w
 If there is a variable z, the space becomes three-dimentional.
 Note that we store the 2D and 3D indexes separately, a query with z in parameters is automatically assumed a 3d query.
 
-
+Sorry for the sparse documentation, I will make a more detailed description when time permits.
 
 
