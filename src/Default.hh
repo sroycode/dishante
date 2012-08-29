@@ -66,6 +66,7 @@
 #define DSHN_DEFAULT_STRN_GID "gid"
 #define DSHN_DEFAULT_STRN_X "x"
 #define DSHN_DEFAULT_STRN_Y "y"
+#define DSHN_DEFAULT_STRN_Z "z"
 #define DSHN_DEFAULT_STRN_NO "no"
 
 #define DSHN_DEFAULT_STRN_TEMPDIR "tempdir"

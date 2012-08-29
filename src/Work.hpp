@@ -46,8 +46,10 @@ class Work : private boost::noncopyable, public boost::enable_shared_from_this<W
 public:
 	typedef std::vector<std::string> sVec;
 	typedef std::vector<std::string> AttrT;
-	typedef dsh::PointData<DSHN_DEFAULT_COORDT,AttrT> PointDataT;
-	typedef std::map<std::string,PointDataT::pointer> spMap;
+	typedef dsh::PointData<DSHN_DEFAULT_COORDT,AttrT,2> PointDataT2d;
+	typedef dsh::PointData<DSHN_DEFAULT_COORDT,AttrT,3> PointDataT3d;
+	typedef std::map<std::string,PointDataT2d::pointer> sp2Map;
+	typedef std::map<std::string,PointDataT3d::pointer> sp3Map;
 	typedef boost::shared_ptr<Work> pointer;
 	/**
 	* create : static construction creates new first time
@@ -85,8 +87,10 @@ public:
 	*/
 	bool run(apn::WebObject::pointer W);
 private:
-	spMap pdmap;
-	sVec params;
+	sp2Map pdmap;
+	sp3Map pemap;
+	sVec params2d;
+	sVec params3d;
 	/**
 	* Constructor : private Constructor
 	*
@@ -104,11 +108,14 @@ private:
 	* @param MyCFG
 	*   apn::CfgFileOptions ConfigFile Options
 	*
+	* @param is3d
+	*   bool flag to see if data is 3d, is used to create the two vecs
+	*
 	* @return
 	*   sVec
 	*/
 
-	sVec loadparams(apn::CfgFileOptions& MyCFG);
+	sVec loadparams(apn::CfgFileOptions& MyCFG, bool is3d);
 
 	/**
 	* load: function for loading, this will be passed on
@@ -119,10 +126,13 @@ private:
 	* @param Indata
 	*   sVec input data object for loading
 	*
+	* @param is3d
+	*   bool is it 3d
+	*
 	* @return
 	*   none
 	*/
-	void load(std::string index, sVec Indata);
+	void load(std::string index, sVec Indata, bool is3d);
 };
 }
 #endif /* _DSHN_WORK_HPP_ */

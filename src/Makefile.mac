@@ -2,8 +2,8 @@ CC = g++
 CCFLAGS = -ansi -Wall -Wno-deprecated -O2 -DNDEBUG -I../include -I/opt/local/include
 LDFLAGS = -rdynamic -L/opt/local/lib
 
-MYSQL_INCLUDE = $(shell mysql_config --include) -DCOMPILE_WITH_MYSQL
-MYSQL_LDFLAGS = $(shell mysql_config --libs)
+MYSQL_INCLUDE = $(shell mysql_config5 --include) -DCOMPILE_WITH_MYSQL
+MYSQL_LDFLAGS = $(shell mysql_config5 --libs)
 
 PGSQL_INCLUDE = -I$(shell pg_config --includedir) -DCOMPILE_WITH_PGSQL
 PGSQL_LDFLAGS = -L$(shell pg_config --pkglibdir) -lpq

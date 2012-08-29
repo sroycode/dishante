@@ -42,13 +42,13 @@
 
 
 namespace dsh {
-template <class CoordT, class AttrT>
-class PointData : private boost::noncopyable, public boost::enable_shared_from_this<PointData<CoordT,AttrT> > {
+template <class CoordT, class AttrT, unsigned int Dim>
+class PointData : private boost::noncopyable, public boost::enable_shared_from_this<PointData<CoordT,AttrT,Dim> > {
 public:
-	typedef typename boost::shared_ptr< PointData<CoordT,AttrT> > pointer;
-	typedef typename boost::array<CoordT, 2> Point;
+	typedef typename boost::shared_ptr< PointData<CoordT,AttrT,Dim> > pointer;
+	typedef typename boost::array<CoordT, Dim> Point;
 	typedef typename std::vector<Point> pVec;
-	typedef typename dsh::SfcData<pVec, 2, CoordT> SfcT;
+	typedef typename dsh::SfcData<pVec, Dim, CoordT> SfcT;
 	typedef typename boost::tuple<long unsigned int,double,AttrT> OutT;
 	typedef typename std::vector<AttrT> aVec;
 
@@ -81,11 +81,8 @@ public:
 	/**
 	* Add: Add to Array
 	*
-	* @param x
-	*   CoordT elem x
-	*
-	* @param y
-	*   CoordT elem y
+	* @param Q
+	*   Point Q 
 	*
 	* @param a
 	*   AttrT elem a
@@ -93,11 +90,10 @@ public:
 	* @return
 	*   none
 	*/
-	void Add(CoordT x,CoordT y, AttrT a) {
+	void Add(Point Q, AttrT a) {
 
 		if (PointDataSize!=0)
 			throw apn::GenericException(DSH_POINT_DATA_HPP_PROGNO,"PointDataSize exists"," while addition");
-		Point Q= {{x,y}};
 		PointDataVec.push_back(Q);
 		AttrDataVec.push_back(a);
 	}
@@ -113,17 +109,14 @@ public:
 			throw apn::GenericException(DSH_POINT_DATA_HPP_PROGNO,"PointDataSize exists"," when locking");
 		PointDataSfc = SfcT(PointDataVec);
 		PointDataSize=PointDataVec.size();
-		std::cerr << "PointDataSize " << std::endl;
+		std::cerr << "Loaded 2d " << std::endl;
 	}
 
 	/**
 	* GetNN: find nearest point
 	*
-	* @param x
-	*   CoordT elem x
-	*
-	* @param y
-	*   CoordT elem y
+	* @param Q
+	*   Point Q 
 	*
 	* @param nores
 	*   unsigned long no of results
@@ -132,13 +125,12 @@ public:
 	*   T output point and distance list
 	*/
 	template<class T>
-	T GetNN(CoordT& x, CoordT& y,unsigned int nores) {
+	T GetNN(Point Q,unsigned int nores) {
 		if (PointDataSize==0)
 			throw apn::GenericException(DSH_POINT_DATA_HPP_PROGNO,"PointDataSize is zero"," when searching");
 		std::vector<OutT> aout;
 		typename SfcT::lVec answer;
 		typename SfcT::dVec distance;
-		Point Q= {{x,y}};
 		if (nores>PointDataSize) nores=PointDataSize;
 		PointDataSfc.ksearch(Q, (unsigned long)nores, answer,distance,0);
 		for (std::size_t i=0; i<answer.size(); ++i) {
