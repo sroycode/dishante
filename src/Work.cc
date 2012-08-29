@@ -239,6 +239,7 @@ bool dshn::Work::run(apn::WebObject::pointer W)
 		bool is3d = false;
 		boost::tuples::tie(e,z) = W->GetReqParam<DSHN_DEFAULT_COORDT>(DSHN_DEFAULT_STRN_Z);
 		if (e) is3d=true;
+		/** so we use z to determine dimension, will need to change */
 
 		unsigned int no=1;
 		boost::tuples::tie(e,no) = W->GetReqParam<unsigned int>(DSHN_DEFAULT_STRN_NO);

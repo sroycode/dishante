@@ -15,7 +15,6 @@ you need to have boost mysql /pgsql libraries are optional,
 if you want to compile without just unset the flags COMPILE_WITH_MYSQL and COMPILE_WITH_PGSQL
 (use the makefile the cmake is untested)
 
-
 Running
 ======
 

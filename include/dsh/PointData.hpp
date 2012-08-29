@@ -19,7 +19,7 @@
 *
 * @section DESCRIPTION
 *
-* PointData type encapsulating the SFC
+* PointData type encapsulating the SFC, modified with dim
 *
 */
 
