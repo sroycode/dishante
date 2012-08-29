@@ -46,8 +46,10 @@ class Work : private boost::noncopyable, public boost::enable_shared_from_this<W
 public:
 	typedef std::vector<std::string> sVec;
 	typedef std::vector<std::string> AttrT;
+
 	typedef dsh::PointData<DSHN_DEFAULT_COORDT,AttrT,2> PointDataT2d;
 	typedef dsh::PointData<DSHN_DEFAULT_COORDT,AttrT,3> PointDataT3d;
+
 	typedef std::map<std::string,PointDataT2d::pointer> sp2Map;
 	typedef std::map<std::string,PointDataT3d::pointer> sp3Map;
 	typedef boost::shared_ptr<Work> pointer;

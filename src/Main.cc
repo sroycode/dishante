@@ -19,7 +19,7 @@
 *
 * @section DESCRIPTION
 *
-* Default Main
+* Default Main file
 *
 */
 
