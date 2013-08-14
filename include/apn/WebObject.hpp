@@ -23,9 +23,10 @@
  *
  */
 
+
 #ifndef _APN_WEBOBJECT_HPP_
 #define _APN_WEBOBJECT_HPP_
-#define APN_WEBOBJECT_HPP_PROGNO 1006
+#define APN_WEBOBJECT_HPP_PROGNO 14054
 
 #include <iostream>
 #include <string>
@@ -33,11 +34,13 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/utility/value_init.hpp>
 #include <boost/asio.hpp>
+
 #include "Exception.hh"
 #include "ConvertStr.hpp"
 
@@ -57,6 +60,8 @@
 
 #define APN_WEBOBJ_CONTENT_LENGTH_STR "Content-Length"
 #define APN_WEBOBJ_CONTENT_TYPE_STR "Content-Type"
+#define APN_WEBOBJ_CONN_CLOSE_STR "Connection"
+#define APN_WEBOBJ_CONN_CLOSE_VAL "close"
 #define APN_WEBOBJ_CTRLF "\r\n"
 #define APN_WEBOBJ_CTRLFTWO "\r\n\r\n"
 
@@ -65,7 +70,9 @@ namespace apn {
 /**
  * @brief: WebObject: Class for storing Web Objects
  */
-class WebObject : private boost::noncopyable, public boost::enable_shared_from_this<WebObject> {
+class WebObject :
+	private boost::noncopyable,
+	public boost::enable_shared_from_this<WebObject> {
 public:
 	typedef boost::shared_ptr<apn::WebObject> pointer;
 	typedef std::vector<boost::asio::const_buffer> BufferType;
@@ -79,7 +86,7 @@ public:
 	 * @return
 	 *   none
 	 */
-	static pointer create(std::string hdrs) {
+	static pointer create(std::string& hdrs) {
 		return pointer(new WebObject(hdrs));
 	}
 	/**
@@ -115,7 +122,8 @@ public:
 	 */
 	BufferType GetReply() {
 		fResponse.insert(fResponse.end(),'\0');
-		fReply="HTTP/1.0 200 OK" APN_WEBOBJ_CTRLF;
+		fReply="HTTP/"+fReqVersion+" 200 OK" APN_WEBOBJ_CTRLF;
+		addHeaders(APN_WEBOBJ_CONN_CLOSE_STR,APN_WEBOBJ_CONN_CLOSE_VAL,respHeaders);
 		addHeaders(APN_WEBOBJ_CONTENT_LENGTH_STR,boost::lexical_cast<std::string>(fResponse.size()),respHeaders);
 		addHeaders(APN_WEBOBJ_CONTENT_TYPE_STR,fContentType,respHeaders);
 		fReply+=getHeaders(respHeaders);
@@ -137,12 +145,12 @@ public:
 	}
 
 	/**
-	 * GetHeaders: function to get URL
+	 * GetData: function to get data
 	 *
 	 * @return
 	 *   String Headers value
 	 */
-	std::string GetHeaders() {
+	const std::string& GetData() {
 		return fHeaders ;
 	}
 
@@ -258,6 +266,7 @@ public:
 		return getElem<T>(p, reqHeaders);
 	}
 
+
 private:
 	std::string fOrigURL;
 	std::string fNewURL;
@@ -278,15 +287,16 @@ private:
 	std::string fReply;
 
 	/**
-	 * Constructor: function to initialize from headers
+	 * Constructor: function to initialize from headers and body
 	 *
 	 * @param fH
-	 *   String Headers provided
+	 *   String the request provided
 	 *
 	 * @return
 	 *   none
 	 */
-	WebObject(std::string fH) : Status(true) {
+	WebObject(const std::string& fH) :
+		Status(true) {
 		SetContentType("text/plain");
 		try {
 			fHeaders = fH;
@@ -318,19 +328,34 @@ private:
 			if ( ! UrlDecode(fOrigURL, fNewURL) ) {
 				throw apn::GenericException(APN_WEBOBJECT_HPP_PROGNO,"conversion error","");
 			}
-			sVec tp = Convert::StringToList<sVec>(fNewURL,APN_WEBOBJ_STRN_QMARK);
+			sVec tp = apn::Convert::StringToList<sVec>(fNewURL,APN_WEBOBJ_STRN_QMARK);
 			if (tp.size()==0) {
 				throw apn::GenericException(APN_WEBOBJECT_HPP_PROGNO,"conversion error","");
-			} else
-				reqPath = Convert::StringToList<sVec>(tp[0],APN_WEBOBJ_STRN_SLASH);
-			if (tp.size()>1)
+			} else {
+				reqPath = apn::Convert::StringToList<sVec>(tp[0],APN_WEBOBJ_STRN_SLASH);
+			}
+			if (tp.size()>1) {
 				reqParams = apn::Convert::StringToMap<ssMap>(tp[1], APN_WEBOBJ_STRN_AMPERSAND,APN_WEBOBJ_STRN_EQUALTO);
-		} catch (apn::GenericException e) {
+			}
+			// data if any
+			idx=fHeaders.find(APN_WEBOBJ_CTRLFTWO);
+			if (idx != std::string::npos) {
+				fHeaders.erase(0,idx+4);
+				if ((GetMethod()=="POST") && (fHeaders.length()>=2)) {
+					bool stat=false;
+					std::size_t c=0;
+					boost::tuples::tie(stat,c)=GetReqHeader<std::size_t>("Content-Length");
+				}
+			} else {
+				fHeaders.clear();
+			}
+		} catch (apn::GenericException& e) {
 			Status=false;
 		} catch (...) {
 			Status=false;
 		}
 	}
+
 	/**
 	 * Constructor : the unused constructor
 	 */
@@ -353,8 +378,9 @@ private:
 		while ((idx=str.find(APN_WEBOBJ_CTRLF)) != std::string::npos) {
 			t=str.substr(0,idx);
 			str.erase(0,idx+2);
-			if (t == APN_WEBOBJ_STRN_BLANK)
+			if (t == APN_WEBOBJ_STRN_BLANK) {
 				break;
+			}
 			idx=t.find(APN_WEBOBJ_STRN_COLONSPACE);
 			if (idx == std::string::npos) {
 				break;
@@ -415,7 +441,7 @@ private:
 		try {
 			ssMap::const_iterator it = hm.find(needle);
 			if (it!=hm.end()) {
-				item=Convert::AnyToAny<std::string,T>(it->second);
+				item=apn::Convert::AnyToAny<std::string,T>(it->second);
 				stat=true;
 			}
 		} catch (...) {}
@@ -443,8 +469,9 @@ private:
 			for (std::size_t i = 0; i < insize; ++i) {
 				switch (inS[i]) {
 				case APN_WEBOBJ_CHAR_PERCENT:
-					if (i + 2 >= insize) return false;
-					else {
+					if (i + 2 >= insize) {
+						return false;
+					} else {
 						int value = 0;
 						std::istringstream is(inS.substr(i + 1, 2));
 						if (is >> std::hex >> value) {

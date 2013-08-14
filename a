@@ -1,28 +1,3 @@
-/**
- * @project apophnia++
- * @file include/apn/ConnServ.hpp
- * @author  S Roychowdhury <sroycode AT gmail DOT com>
- * @version 1.0
- *
- * @section LICENSE
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details at
- * http://www.gnu.org/copyleft/gpl.html
- *
- * @section DESCRIPTION
- *
- * ConnServ : Class to Handle the web asio
- *
- */
-
 #ifndef _APN_CONNSERV_HPP_
 #define _APN_CONNSERV_HPP_
 #define APN_CONNSERV_HPP_PROGNO 14052
@@ -35,7 +10,7 @@
 
 #include "ConnHand.hpp"
 
-namespace apn {
+namespace rbh {
 /**
  * @brief: The ConnServ class is used for web service
  *
@@ -44,8 +19,8 @@ class ConnServ :
 	private boost::noncopyable,
 	public boost::enable_shared_from_this<ConnServ> {
 public:
-	typedef boost::shared_ptr<apn::ConnServ> pointer;
-	typedef boost::function<bool(apn::WebObject::pointer)> ActionT;
+	typedef boost::shared_ptr<rbh::ConnServ> pointer;
+	typedef boost::function<bool(rbh::WebObject::pointer)> ActionT;
 
 	/**
 	 * create : static construction creates new first time
@@ -100,9 +75,9 @@ public:
 			}
 			thr_grp.join_all();
 		} catch (std::exception& e) {
-			throw apn::GenericException(APN_CONNSERV_HPP_PROGNO,"Shutdown ",e.what());
+			throw rbh::GenericException(APN_CONNSERV_HPP_PROGNO,"Shutdown ",e.what());
 		} catch (...) {
-			throw apn::GenericException(APN_CONNSERV_HPP_PROGNO,"Shutdown ","Unhandled");
+			throw rbh::GenericException(APN_CONNSERV_HPP_PROGNO,"Shutdown ","Unhandled");
 		}
 	}
 
@@ -138,7 +113,7 @@ private:
 		thread_num_(thread_num),
 		tref_(tref),
 		acceptor_(io_service_),
-		new_connection_(apn::ConnHand::create(io_service_,tref_)) {
+		new_connection_(rbh::ConnHand::create(io_service_,tref_)) {
 		// Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
 		boost::asio::ip::tcp::resolver resolver(io_service_);
 		boost::asio::ip::tcp::resolver::query query(address, port);
@@ -186,5 +161,5 @@ private:
 	}
 };
 
-} // namespace apn
+} // namespace rbh
 #endif

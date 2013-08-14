@@ -67,10 +67,14 @@ int main(int argc, char *argv[])
 		/** port: CommandLine, Config , default */
 		int port = FindInSystem<int>(DSHN_DEFAULT_STRN_PORT,DSHN_DEFAULT_PORT);
 		int threads = FindInSystem<int>(DSHN_DEFAULT_STRN_THREADS,DSHN_DEFAULT_HTTP_THREADS);
+		std::string address = FindInSystem<std::string>(DSHN_DEFAULT_STRN_ADDRESS,DSHN_DEFAULT_HTTP_ADDRESS);
 		/**  work */
 		dshn::Work::pointer Sdata = dshn::Work::create(MyCFG);
 		/** http */
-		apn::ConnServ<dshn::Work::pointer>::create(threads, port, Sdata->share());
+		apn::ConnServ::pointer cs = apn::ConnServ::create(
+	                                threads, address, apn::Convert::AnyToAny<unsigned int,std::string>(port),
+	                                boost::bind(&dshn::Work::run,Sdata->share(),_1));
+		cs->Run();
 
 	} catch(apn::GenericException e) {
 		std::cerr << e.ErrorCode_ << " " << e.ErrorMsg_ << " " << e.ErrorFor_ << std::endl;
