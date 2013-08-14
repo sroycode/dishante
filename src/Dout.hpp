@@ -99,17 +99,16 @@ public:
 		switch (fcode) {
 		case 1: {
 			std::stringstream ss;
-			ss << "{result:";
+			ss << "[";
 			for (std::size_t i=0; i<res.size(); ++i) {
 				if (i>0) ss << ",";
-				ss << "[dist:" << res[i].template get<1>() << ",{" ;
+				ss << "{\"dist\":" << res[i].template get<1>();
 				for (std::size_t j=0; j<res[i].template get<2>().size(); ++j) {
-					if (j>0) ss <<",";
-					ss << invec_[j] << ":\"" << res[i].template get<2>()[j] << "\"" ;
+					ss << ",\"" << invec_[j] << "\":\"" << res[i].template get<2>()[j] << "\"" ;
 				}
-				ss << "]}";
+				ss << "}";
 			}
-			ss << "}";
+			ss << "]";
 			status=true;
 			result=ss.str();
 		}
